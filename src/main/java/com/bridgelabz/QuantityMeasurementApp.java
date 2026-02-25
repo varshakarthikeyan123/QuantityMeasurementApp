@@ -2,36 +2,14 @@ package com.bridgelabz;
 
 public class QuantityMeasurementApp {
 
-    public static class Feet {
-        private final double value;
+    public static void main(String[] args) {
 
-        public Feet(double value) {
-            this.value = value;
-        }
+        QuantityLength q1 =
+                new QuantityLength(1.0, LengthUnit.FEET);
 
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            Feet other = (Feet) obj;
-            return Double.compare(this.value, other.value) == 0;
-        }
-    }
+        QuantityLength q2 =
+                new QuantityLength(12.0, LengthUnit.INCHES);
 
-    // NEW — UC2
-    public static class Inches {
-        private final double value;
-
-        public Inches(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            Inches other = (Inches) obj;
-            return Double.compare(this.value, other.value) == 0;
-        }
+        System.out.println("Equal : " + q1.equals(q2));
     }
 }
