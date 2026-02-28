@@ -2,16 +2,14 @@ package com.bridgelabz;
 
 import java.util.Objects;
 
-public final class QuantityLength {
+public class QuantityLength {
 
     private final double value;
     private final LengthUnit unit;
 
-    private static final double EPSILON = 1e-6;
-
     public QuantityLength(double value, LengthUnit unit) {
         if (!Double.isFinite(value))
-            throw new IllegalArgumentException("Invalid numeric value");
+            throw new IllegalArgumentException("Invalid value");
 
         if (unit == null)
             throw new IllegalArgumentException("Unit cannot be null");
@@ -28,70 +26,72 @@ public final class QuantityLength {
         return unit;
     }
 
-    /* =======================
-       STATIC CONVERSION API
-       ======================= */
-
+    // ---------- UC5 CONVERSION ----------
     public static double convert(double value,
                                  LengthUnit source,
                                  LengthUnit target) {
 
         if (!Double.isFinite(value))
-            throw new IllegalArgumentException("Invalid numeric value");
+            throw new IllegalArgumentException("Invalid value");
 
         if (source == null || target == null)
-            throw new IllegalArgumentException("Units cannot be null");
+            throw new IllegalArgumentException("Unit cannot be null");
 
-        // Convert to base unit (feet)
-        double valueInFeet = value * source.getConversionFactor();
+        double baseValue =
+                value * source.getConversionFactor();
 
-        // Convert from feet to target unit
-        return valueInFeet / target.getConversionFactor();
+        return baseValue / target.getConversionFactor();
     }
 
-    /* =======================
-       INSTANCE CONVERT METHOD
-       ======================= */
+    public QuantityLength convertTo(LengthUnit target) {
+        double converted =
+                convert(this.value, this.unit, target);
 
-    public QuantityLength convertTo(LengthUnit targetUnit) {
-
-        if (targetUnit == null)
-            throw new IllegalArgumentException("Target unit cannot be null");
-
-        double convertedValue =
-                convert(this.value, this.unit, targetUnit);
-
-        return new QuantityLength(convertedValue, targetUnit);
+        return new QuantityLength(converted, target);
     }
 
-    /* =======================
-       EQUALITY (from UC3/UC4)
-       ======================= */
+    // ---------- UC6 ADDITION ----------
+    public QuantityLength add(QuantityLength other) {
 
+        if (other == null)
+            throw new IllegalArgumentException("Length cannot be null");
+
+        double thisFeet =
+                this.value * this.unit.getConversionFactor();
+
+        double otherFeet =
+                other.value * other.unit.getConversionFactor();
+
+        double sumFeet = thisFeet + otherFeet;
+
+        double result =
+                sumFeet / this.unit.getConversionFactor();
+
+        return new QuantityLength(result, this.unit);
+    }
+
+    // ---------- EQUALS ----------
     @Override
     public boolean equals(Object obj) {
 
         if (this == obj) return true;
-
         if (obj == null || getClass() != obj.getClass())
             return false;
 
         QuantityLength other = (QuantityLength) obj;
 
-        double thisInFeet =
+        double thisFeet =
                 this.value * this.unit.getConversionFactor();
 
-        double otherInFeet =
+        double otherFeet =
                 other.value * other.unit.getConversionFactor();
 
-        return Math.abs(thisInFeet - otherInFeet) < EPSILON;
+        return Double.compare(thisFeet, otherFeet) == 0;
     }
 
     @Override
     public int hashCode() {
-        double baseValue =
-                value * unit.getConversionFactor();
-        return Objects.hash(baseValue);
+        return Objects.hash(value, unit);
     }
 
     @Override
