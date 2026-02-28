@@ -5,7 +5,7 @@ public enum LengthUnit {
     FEET(1.0),
     INCHES(1.0 / 12),
     YARDS(3.0),
-    CENTIMETERS(0.0328084); // 1 cm in feet
+    CENTIMETERS(0.0328084);
 
     private final double conversionFactor;
 

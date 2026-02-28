@@ -8,6 +8,7 @@ public class QuantityLength {
     private final LengthUnit unit;
 
     public QuantityLength(double value, LengthUnit unit) {
+
         if (!Double.isFinite(value))
             throw new IllegalArgumentException("Invalid value");
 
@@ -26,16 +27,16 @@ public class QuantityLength {
         return unit;
     }
 
-    // ---------- UC5 CONVERSION ----------
+    // ================= UC5 CONVERT =================
     public static double convert(double value,
                                  LengthUnit source,
                                  LengthUnit target) {
 
         if (!Double.isFinite(value))
-            throw new IllegalArgumentException("Invalid value");
+            throw new IllegalArgumentException();
 
         if (source == null || target == null)
-            throw new IllegalArgumentException("Unit cannot be null");
+            throw new IllegalArgumentException();
 
         double baseValue =
                 value * source.getConversionFactor();
@@ -44,17 +45,16 @@ public class QuantityLength {
     }
 
     public QuantityLength convertTo(LengthUnit target) {
-        double converted =
-                convert(this.value, this.unit, target);
-
-        return new QuantityLength(converted, target);
+        return new QuantityLength(
+                convert(this.value, this.unit, target),
+                target);
     }
 
-    // ---------- UC6 ADDITION ----------
+    // ================= UC6 ADD (default first unit) =================
     public QuantityLength add(QuantityLength other) {
 
         if (other == null)
-            throw new IllegalArgumentException("Length cannot be null");
+            throw new IllegalArgumentException();
 
         double thisFeet =
                 this.value * this.unit.getConversionFactor();
@@ -70,7 +70,28 @@ public class QuantityLength {
         return new QuantityLength(result, this.unit);
     }
 
-    // ---------- EQUALS ----------
+    // ================= UC7 ADD (EXPLICIT TARGET UNIT) =================
+    public QuantityLength add(QuantityLength other,
+                              LengthUnit targetUnit) {
+
+        if (other == null || targetUnit == null)
+            throw new IllegalArgumentException();
+
+        double thisFeet =
+                this.value * this.unit.getConversionFactor();
+
+        double otherFeet =
+                other.value * other.unit.getConversionFactor();
+
+        double sumFeet = thisFeet + otherFeet;
+
+        double result =
+                sumFeet / targetUnit.getConversionFactor();
+
+        return new QuantityLength(result, targetUnit);
+    }
+
+    // ================= EQUALS =================
     @Override
     public boolean equals(Object obj) {
 
