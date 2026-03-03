@@ -99,4 +99,74 @@ public class QuantityTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new Quantity<>(Double.NaN, LengthUnit.FEET));
     }
+
+    // ================= UC11 VOLUME TESTS =================
+
+    @Test
+    void testVolumeEquality_LitreToMillilitre() {
+        Quantity<VolumeUnit> v1 =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> v2 =
+                new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        assertTrue(v1.equals(v2));
+    }
+
+    @Test
+    void testVolumeEquality_LitreToGallon() {
+        Quantity<VolumeUnit> v1 =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> v2 =
+                new Quantity<>(0.264172, VolumeUnit.GALLON);
+
+        assertTrue(v1.equals(v2));
+    }
+
+    @Test
+    void testVolumeConversion_LitreToMillilitre() {
+        Quantity<VolumeUnit> v1 =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> result =
+                v1.convertTo(VolumeUnit.MILLILITRE);
+
+        assertEquals(1000.0, result.getValue(), 0.01);
+    }
+
+    @Test
+    void testVolumeConversion_GallonToLitre() {
+        Quantity<VolumeUnit> v1 =
+                new Quantity<>(1.0, VolumeUnit.GALLON);
+
+        Quantity<VolumeUnit> result =
+                v1.convertTo(VolumeUnit.LITRE);
+
+        assertEquals(3.78541, result.getValue(), 0.01);
+    }
+
+    @Test
+    void testVolumeAddition_LitrePlusMillilitre() {
+        Quantity<VolumeUnit> v1 =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<VolumeUnit> v2 =
+                new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+
+        Quantity<VolumeUnit> result = v1.add(v2);
+
+        assertEquals(2.0, result.getValue(), 0.01);
+    }
+
+    @Test
+    void testVolumeVsLength_NotEqual() {
+        Quantity<VolumeUnit> volume =
+                new Quantity<>(1.0, VolumeUnit.LITRE);
+
+        Quantity<LengthUnit> length =
+                new Quantity<>(1.0, LengthUnit.FEET);
+
+        assertFalse(volume.equals(length));
+    }
 }
