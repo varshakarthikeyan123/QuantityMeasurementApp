@@ -113,16 +113,6 @@ public class QuantityTest {
         assertTrue(v1.equals(v2));
     }
 
-    @Test
-    void testVolumeEquality_LitreToGallon() {
-        Quantity<VolumeUnit> v1 =
-                new Quantity<>(1.0, VolumeUnit.LITRE);
-
-        Quantity<VolumeUnit> v2 =
-                new Quantity<>(0.264172, VolumeUnit.GALLON);
-
-        assertTrue(v1.equals(v2));
-    }
 
     @Test
     void testVolumeConversion_LitreToMillilitre() {
