@@ -17,7 +17,7 @@ public class Quantity<U extends IMeasurable> {
             throw new IllegalArgumentException("Unit cannot be null");
         }
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Value must be a finite number");
+            throw new IllegalArgumentException("Value must be finite");
         }
         this.value = value;
         this.unit = unit;
@@ -44,10 +44,10 @@ public class Quantity<U extends IMeasurable> {
             return false;
         }
 
-        double thisBase = this.unit.convertToBaseUnit(this.value);
-        double otherBase = ((IMeasurable) other.unit).convertToBaseUnit(other.value);
+        double base1 = this.unit.convertToBaseUnit(this.value);
+        double base2 = ((IMeasurable) other.unit).convertToBaseUnit(other.value);
 
-        return Double.compare(thisBase, otherBase) == 0;
+        return Double.compare(base1, base2) == 0;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Quantity<U extends IMeasurable> {
     }
 
     /* ================================
-       UNIT CONVERSION
+       CONVERSION
        ================================ */
 
     public Quantity<U> convertTo(U targetUnit) {
@@ -70,14 +70,14 @@ public class Quantity<U extends IMeasurable> {
             throw new IllegalArgumentException("Target unit cannot be null");
         }
 
-        double baseValue = unit.convertToBaseUnit(this.value);
-        double converted = targetUnit.convertFromBaseUnit(baseValue);
+        double base = unit.convertToBaseUnit(this.value);
+        double converted = targetUnit.convertFromBaseUnit(base);
 
         return new Quantity<>(roundToTwoDecimals(converted), targetUnit);
     }
 
     /* ================================
-       UC13 – CENTRALIZED ARITHMETIC
+       CENTRALIZED ARITHMETIC (UC13 + UC14)
        ================================ */
 
     private enum ArithmeticOperation {
@@ -85,7 +85,7 @@ public class Quantity<U extends IMeasurable> {
         SUBTRACT((a, b) -> a - b),
         DIVIDE((a, b) -> {
             if (b == 0) {
-                throw new ArithmeticException("Division by zero is not allowed");
+                throw new ArithmeticException("Division by zero");
             }
             return a / b;
         });
@@ -102,16 +102,19 @@ public class Quantity<U extends IMeasurable> {
     }
 
     private void validateArithmeticOperands(Quantity<U> other, U targetUnit, boolean targetRequired) {
+
+        this.unit.validateOperationSupport("ARITHMETIC");
+
         if (other == null) {
             throw new IllegalArgumentException("Operand cannot be null");
         }
 
         if (!this.unit.getClass().equals(other.unit.getClass())) {
-            throw new IllegalArgumentException("Cannot perform arithmetic on different measurement categories");
+            throw new IllegalArgumentException("Different measurement categories");
         }
 
         if (!Double.isFinite(this.value) || !Double.isFinite(other.value)) {
-            throw new IllegalArgumentException("Values must be finite numbers");
+            throw new IllegalArgumentException("Values must be finite");
         }
 
         if (targetRequired && targetUnit == null) {
@@ -119,55 +122,54 @@ public class Quantity<U extends IMeasurable> {
         }
     }
 
-    private double performBaseArithmetic(Quantity<U> other, ArithmeticOperation operation) {
-        double baseValue1 = this.unit.convertToBaseUnit(this.value);
-        double baseValue2 = other.unit.convertToBaseUnit(other.value);
-
-        return operation.compute(baseValue1, baseValue2);
+    private double performBaseArithmetic(Quantity<U> other, ArithmeticOperation op) {
+        double base1 = this.unit.convertToBaseUnit(this.value);
+        double base2 = other.unit.convertToBaseUnit(other.value);
+        return op.compute(base1, base2);
     }
 
-    private double roundToTwoDecimals(double value) {
-        return Math.round(value * 100.0) / 100.0;
+    private double roundToTwoDecimals(double val) {
+        return Math.round(val * 100.0) / 100.0;
     }
 
     /* ================================
-       ADD METHODS
+       ADD
        ================================ */
 
     public Quantity<U> add(Quantity<U> other) {
         validateArithmeticOperands(other, this.unit, false);
-        double baseResult = performBaseArithmetic(other, ArithmeticOperation.ADD);
-        double converted = this.unit.convertFromBaseUnit(baseResult);
-        return new Quantity<>(roundToTwoDecimals(converted), this.unit);
+        double base = performBaseArithmetic(other, ArithmeticOperation.ADD);
+        double converted = unit.convertFromBaseUnit(base);
+        return new Quantity<>(roundToTwoDecimals(converted), unit);
     }
 
     public Quantity<U> add(Quantity<U> other, U targetUnit) {
         validateArithmeticOperands(other, targetUnit, true);
-        double baseResult = performBaseArithmetic(other, ArithmeticOperation.ADD);
-        double converted = targetUnit.convertFromBaseUnit(baseResult);
+        double base = performBaseArithmetic(other, ArithmeticOperation.ADD);
+        double converted = targetUnit.convertFromBaseUnit(base);
         return new Quantity<>(roundToTwoDecimals(converted), targetUnit);
     }
 
     /* ================================
-       SUBTRACT METHODS
+       SUBTRACT
        ================================ */
 
     public Quantity<U> subtract(Quantity<U> other) {
         validateArithmeticOperands(other, this.unit, false);
-        double baseResult = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
-        double converted = this.unit.convertFromBaseUnit(baseResult);
-        return new Quantity<>(roundToTwoDecimals(converted), this.unit);
+        double base = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
+        double converted = unit.convertFromBaseUnit(base);
+        return new Quantity<>(roundToTwoDecimals(converted), unit);
     }
 
     public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
         validateArithmeticOperands(other, targetUnit, true);
-        double baseResult = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
-        double converted = targetUnit.convertFromBaseUnit(baseResult);
+        double base = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
+        double converted = targetUnit.convertFromBaseUnit(base);
         return new Quantity<>(roundToTwoDecimals(converted), targetUnit);
     }
 
     /* ================================
-       DIVIDE METHOD
+       DIVIDE
        ================================ */
 
     public double divide(Quantity<U> other) {
