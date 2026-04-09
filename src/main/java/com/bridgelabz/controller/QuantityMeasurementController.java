@@ -17,7 +17,7 @@ public class QuantityMeasurementController {
     }
 
     @PostMapping("/save")
-    public String save(@RequestBody QuantityMeasurementEntity entity) {
+    public QuantityMeasurementEntity save(@RequestBody QuantityMeasurementEntity entity) {
         return service.addQuantity(entity);
     }
 

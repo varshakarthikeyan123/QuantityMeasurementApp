@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface QuantityMeasurementService {
 
-    String addQuantity(QuantityMeasurementEntity entity);
+    QuantityMeasurementEntity addQuantity(QuantityMeasurementEntity entity);
 
     List<QuantityMeasurementEntity> getAll();
 }
