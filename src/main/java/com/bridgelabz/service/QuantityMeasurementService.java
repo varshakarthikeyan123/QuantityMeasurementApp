@@ -1,8 +1,11 @@
 package com.bridgelabz.service;
 
-import com.bridgelabz.dto.QuantityDTO;
+import com.bridgelabz.entity.QuantityMeasurementEntity;
+import java.util.List;
 
 public interface QuantityMeasurementService {
-    boolean compare(QuantityDTO q1, QuantityDTO q2);
-    QuantityDTO add(QuantityDTO q1, QuantityDTO q2);
+
+    String addQuantity(QuantityMeasurementEntity entity);
+
+    List<QuantityMeasurementEntity> getAll();
 }
