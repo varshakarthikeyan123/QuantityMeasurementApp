@@ -1,0 +1,6 @@
+package com.bridgelabz.entity;
+public enum Role {
+
+    ROLE_USER,
+    ROLE_ADMIN
+}
